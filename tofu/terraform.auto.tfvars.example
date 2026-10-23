@@ -1,0 +1,6 @@
+vm_ip            = "192.168.86.211/24"
+vm_gateway        = "192.168.86.1"
+vm_dns            = "192.168.86.1"
+ssh_public_key    = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA..."
+proxmox_endpoint  = "https://<pve01-ip>:8006/"
+proxmox_api_token = "tofu@pve!homelab-infra=<secret>"
