@@ -1,31 +1,18 @@
 provider "proxmox" {
-  endpoint = var.proxmox_endpoint
   insecure = true
-
-  api_token = var.proxmox_api_token
-}
-
-variable "proxmox_endpoint" {
-  description = "Proxmox VE API endpoint"
-  type        = string
-  sensitive   = true
-}
-
-variable "proxmox_api_token" {
-  description = "Proxmox VE API token"
-  type        = string
-  sensitive   = true
 }
 
 resource "proxmox_virtual_environment_vm" "k3s" {
-  node_name = var.proxmox_node
-  vm_id     = var.vm_id
-  name      = var.vm_name
+  for_each = var.vms
+
+  node_name = each.value.node
+  vm_id     = each.value.vm_id
+  name      = each.value.name
   started   = true
   on_boot   = true
 
   clone {
-    vm_id = var.template_id
+    vm_id = each.value.template_id
   }
 
   cpu {
@@ -35,7 +22,7 @@ resource "proxmox_virtual_environment_vm" "k3s" {
   }
 
   memory {
-    dedicated = 5120
+    dedicated = each.value.memory
   }
 
   agent {
@@ -46,7 +33,7 @@ resource "proxmox_virtual_environment_vm" "k3s" {
     datastore_id = "local-lvm"
     file_format  = "raw"
     interface    = "scsi0"
-    size         = 80
+    size         = each.value.disk_size
     iothread     = true
     discard      = "on"
   }
@@ -59,8 +46,8 @@ resource "proxmox_virtual_environment_vm" "k3s" {
     datastore_id = "local-lvm"
     ip_config {
       ipv4 {
-        address = var.vm_ip
-        gateway = var.vm_gateway
+        address = "${each.value.ip}/24"
+        gateway = "192.168.86.1"
       }
     }
 
@@ -70,7 +57,7 @@ resource "proxmox_virtual_environment_vm" "k3s" {
     }
 
     dns {
-      servers = [var.vm_dns]
+      servers = ["192.168.86.1"]
     }
   }
 }
