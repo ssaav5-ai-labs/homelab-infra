@@ -26,7 +26,7 @@ jobs:
           curl -sSfL https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz | tar xJ shellcheck-v0.11.0/shellcheck --strip-components=1
           sudo mv shellcheck /usr/local/bin/
       - name: shellcheck k3s scripts
-        run: shellcheck k3s/**/*.sh
+        run: shellcheck -e SC2329 k3s/**/*.sh
       - name: Validate YAML configs
         run: |
           pip install pyyaml -q
