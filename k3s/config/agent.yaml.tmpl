@@ -1,0 +1,7 @@
+server: https://${FIRST_SERVER_IP}:6443
+token: "${K3S_TOKEN}"
+node-ip: "${NODE_IP}"
+kubelet-arg:
+  - "system-reserved=cpu=250m,memory=384Mi"
+  - "kube-reserved=cpu=100m,memory=256Mi"
+  - "eviction-hard=memory.available<256Mi"

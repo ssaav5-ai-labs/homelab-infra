@@ -21,3 +21,25 @@ jobs:
       - name: tofu validate
         run: tofu init -backend=false && tofu validate
         working-directory: tofu
+      - name: Install shellcheck
+        run: |
+          curl -sSfL https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz | tar xJ shellcheck-v0.11.0/shellcheck --strip-components=1
+          sudo mv shellcheck /usr/local/bin/
+      - name: shellcheck k3s scripts
+        run: shellcheck -e SC2329 k3s/**/*.sh
+      - name: Validate YAML configs
+        run: |
+          pip install pyyaml -q
+          python3 -c '
+          import yaml, glob, sys
+          errors = 0
+          for pattern in ["k3s/config/*", "k3s/smoke/*.yaml"]:
+            for f in glob.glob(pattern):
+              try:
+                with open(f) as fh:
+                  list(yaml.safe_load_all(fh))
+              except yaml.YAMLError as e:
+                print(f"INVALID: {f}: {e}")
+                errors += 1
+          sys.exit(errors)
+          '
