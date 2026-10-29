@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smoketest-pvc
+  namespace: smoke
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-write-read
+  namespace: smoke
+spec:
+  restartPolicy: Never
+  containers:
+    - name: check
+      image: busybox:1.38.0
+      command:
+        - sh
+        - -c
+        - |
+          set -e
+          echo "hello from local-path" > /data/smoke.txt
+          got=$(cat /data/smoke.txt)
+          if [ "$got" = "hello from local-path" ]; then
+            echo "PASS: wrote and read back $got"
+          else
+            echo "FAIL: read back '$got'"
+            exit 1
+          fi
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: smoketest-pvc

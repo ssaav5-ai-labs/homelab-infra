@@ -1,0 +1,22 @@
+ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIElsOw+prrCHYGb9jXPogs7Ql4XlcSieaptIebxcS1YG shawn@shawns"
+
+vms = {
+  "k3s-01" = {
+    node        = "pve01"
+    vm_id       = 101
+    name        = "k3s-01"
+    template_id = 9000
+    ip          = "192.168.86.211"
+    disk_size   = 80
+    memory      = 4608
+  }
+  "k3s-02" = {
+    node        = "pve02"
+    vm_id       = 102
+    name        = "k3s-02"
+    template_id = 9002
+    ip          = "192.168.86.212"
+    disk_size   = 60
+    memory      = 4608
+  }
+}

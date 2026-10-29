@@ -1,0 +1,21 @@
+{
+  "name": "${localWorkspaceFolderBasename}",
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": { "version": "1.37.1", "helm": "4.3.1", "minikube": "none" },
+    "ghcr.io/devcontainers/features/node:1": { "version": "24" },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "containerEnv": {
+    "LLM_GATEWAY_URL": "${localEnv:LLM_GATEWAY_URL}",
+    "LLM_GATEWAY_KEY": "${localEnv:LLM_GATEWAY_KEY}"
+  },
+  "mounts": [
+    "source=opencode-data,target=/home/vscode/.local/share/opencode,type=volume",
+    "source=${localEnv:USERPROFILE}\\.kube,target=/home/vscode/.kube,type=bind",
+    "source=homelab-ssh,target=/home/vscode/.ssh,type=volume",
+    "source=${localEnv:USERPROFILE}\\code\\github.com\\ssaav5-ai-labs\\handbook,target=/knowledge/handbook,type=bind,consistency=cached"
+  ],
+  "forwardPorts": [],
+  "postCreateCommand": "sudo chown vscode:vscode /home/vscode/.ssh && chmod 700 /home/vscode/.ssh && sudo chown -R vscode:vscode /home/vscode/.local && git config --global --add safe.directory ${containerWorkspaceFolder} && git config --global core.fileMode false && git config --global core.autocrlf input && npm install -g opencode-ai@1.19.3 @inkeep/open-knowledge"
+}

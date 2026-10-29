@@ -1,0 +1,11 @@
+token: "${K3S_TOKEN}"
+node-ip: "${NODE_IP}"
+tls-san: ["${NODE_IP}"]
+secrets-encryption: true
+write-kubeconfig-mode: "0600"
+etcd-snapshot-schedule-cron: "0 2 * * *"
+etcd-snapshot-retention: 7
+kubelet-arg:
+  - "system-reserved=cpu=250m,memory=384Mi"
+  - "kube-reserved=cpu=250m,memory=512Mi"
+  - "eviction-hard=memory.available<256Mi"

@@ -2,4 +2,5 @@
 *.tfstate
 *.tfstate.*
 .terraform/
-*.auto.tfvars
+*.auto.tfvars.runs/
+.runs/

@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smoke-script
+  namespace: smoke
+data:
+  check.sh: |
+    #!/bin/sh
+
+    echo "== 1. DNS resolution =="
+    if nslookup whoami.smoke.svc.cluster.local; then
+      echo "PASS: DNS resolved whoami service"
+    else
+      echo "FAIL: DNS resolution"
+      exit 1
+    fi
+
+    echo "== 2. Service routing: 10 fetches =="
+    i=0; ok=0
+    while [ "$i" -lt 10 ]; do
+      if wget -q -O - http://whoami.smoke.svc.cluster.local > /dev/null 2>&1; then
+        ok=$((ok+1))
+      fi
+      i=$((i+1))
+    done
+    if [ "$ok" -eq 10 ]; then
+      echo "PASS: 10/10 service fetches"
+    else
+      echo "FAIL: $ok/10 service fetches"
+      exit 1
+    fi
+
+    echo "== 3. Overlay: cross-node pod-to-pod =="
+    echo "nslookup headless service..."
+    hostnames=""
+    for ip in $(nslookup whoami-headless.smoke.svc.cluster.local 2>/dev/null | awk '/^Address: / {print $2}' | grep '^10\.'); do
+      echo "  fetching $ip..."
+      resp=$(wget -q -O - "http://${ip}:80" 2>/dev/null || echo "ERROR")
+      if [ "$resp" = "ERROR" ]; then
+        echo "  FAIL: could not reach $ip"
+        continue
+      fi
+      h=$(echo "$resp" | head -1 | cut -d' ' -f2)
+      echo "  $ip -> $h"
+      hostnames="$hostnames $h"
+    done
+
+    count=$(echo "$hostnames" | tr ' ' '\n' | grep -v '^$' | sort -u | wc -l)
+    echo "distinct hosts reached: $count"
+    if [ "$count" -ge 2 ]; then
+      echo "PASS: overlay reaches $count nodes"
+    else
+      echo "FAIL: only $count nodes reachable over overlay"
+      exit 1
+    fi
+
+    echo "ALL CHECKS PASSED on $(hostname)"
