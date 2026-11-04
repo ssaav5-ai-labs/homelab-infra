@@ -8,3 +8,5 @@ Before acting here, read:
 - Open questions in `docs/open-questions/` in the handbook
 
 Never commit secrets, tokens, real public IPs, or real hostnames.
+
+Never render, exec into or print anything that decrypts secrets (KSOPS, sops, the Argo CD repo-server). Debug sync failures from the Application status only. You may merge your own PRs with gh pr merge --squash once all required checks are green; never merge with failing or pending checks.
