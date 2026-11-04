@@ -14,6 +14,7 @@
   },
   "model": "gateway/code",
   "permission": {
+    "external_directory": { "/knowledge/handbook/**": "allow", "/tmp/agent/**": "allow" },
     "bash": {
       "*": "allow",
       "rm *": "ask",
@@ -28,7 +29,17 @@
       "cat *kube/config*": "deny",
       "env": "deny",
       "printenv": "deny",
-      "printenv *": "deny"
+      "printenv *": "deny",
+      "kubectl exec*": "deny",
+      "kubectl * exec *": "deny",
+      "kubectl cp*": "deny",
+      "*kustomize build*": "ask",
+      "*ksops*": "deny",
+      "sops *": "deny",
+      "gh auth token*": "deny",
+      "git push -f*": "deny",
+      "git push --force*": "deny",
+      "gh pr merge*": "allow"
     },
     "read": {
       "*": "allow",
@@ -36,7 +47,10 @@
       "*.env.*": "deny",
       "*.tfvars": "deny",
       "*/.kube/config": "deny",
-      "*/k3s.yaml": "deny"
+      "*/k3s.yaml": "deny",
+      "~/.config/gh/**": "deny",
+      "**/hosts.yml": "deny",
+      "bootstrap/versions.env": "allow"
     }
   },
   "mcp": {
