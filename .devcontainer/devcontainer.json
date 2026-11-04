@@ -8,7 +8,8 @@
   },
   "containerEnv": {
     "LLM_GATEWAY_URL": "${localEnv:LLM_GATEWAY_URL}",
-    "LLM_GATEWAY_KEY": "${localEnv:LLM_GATEWAY_KEY}"
+    "LLM_GATEWAY_KEY": "${localEnv:LLM_GATEWAY_KEY}",
+    "GH_TOKEN": "${localEnv:GH_TOKEN}"
   },
   "mounts": [
     "source=opencode-data,target=/home/vscode/.local/share/opencode,type=volume",

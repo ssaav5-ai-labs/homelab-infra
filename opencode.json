@@ -30,6 +30,8 @@
       "env": "deny",
       "printenv": "deny",
       "printenv *": "deny",
+      "printenv GH_TOKEN*": "deny",
+      "echo *GH_TOKEN*": "deny",
       "kubectl exec*": "deny",
       "kubectl * exec *": "deny",
       "kubectl cp*": "deny",
