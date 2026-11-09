@@ -19,4 +19,15 @@ vms = {
     disk_size   = 60
     memory      = 4608
   }
+  "k3s-03" = {
+    node        = "pve03"
+    vm_id       = 103
+    name        = "k3s-03"
+    template_id = 9003
+    ip          = "192.168.86.213"
+    disk_size   = 100
+    memory      = 12288
+    cores       = 6
+    datastore   = "nvme-data"
+  }
 }

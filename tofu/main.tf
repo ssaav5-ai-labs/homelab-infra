@@ -17,7 +17,7 @@ resource "proxmox_virtual_environment_vm" "k3s" {
 
   cpu {
     type  = "host"
-    cores = 4
+    cores = each.value.cores
     numa  = true
   }
 
@@ -30,7 +30,7 @@ resource "proxmox_virtual_environment_vm" "k3s" {
   }
 
   disk {
-    datastore_id = "local-lvm"
+    datastore_id = each.value.datastore
     file_format  = "raw"
     interface    = "scsi0"
     size         = each.value.disk_size
