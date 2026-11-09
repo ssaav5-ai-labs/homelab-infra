@@ -3,6 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+source "$SCRIPT_DIR/versions.env"
+
 NODES_CONF="$SCRIPT_DIR/nodes.conf"
 FIRST_SERVER=$(awk '$2 == "server" {print $1; exit}' "$NODES_CONF")
 if [ -z "$FIRST_SERVER" ]; then
@@ -21,7 +23,7 @@ FINAL_FILE="$KUBE_DIR/config"
 
 NEW_FILE="$KUBE_DIR/config.new"
 printf '%s\n' "$KUBECONFIG_RAW" \
-  | sed "s|https://127.0.0.1:6443|https://${FIRST_SERVER_IP}:6443|g" \
+  | sed "s|https://127.0.0.1:6443|https://${K3S_API_VIP}:6443|g" \
   | sed 's/name: default/name: homelab/g' \
   | sed 's/cluster: default/cluster: homelab/g' \
   | sed 's/user: default/user: homelab/g' \
@@ -31,7 +33,7 @@ printf '%s\n' "$KUBECONFIG_RAW" \
 chmod 600 "$NEW_FILE"
 
 if [ -f "$FINAL_FILE" ]; then
-  KUBECONFIG="$FINAL_FILE:$NEW_FILE" kubectl config view --flatten > "$FINAL_FILE.tmp"
+  KUBECONFIG="$NEW_FILE:$FINAL_FILE" kubectl config view --flatten > "$FINAL_FILE.tmp"
   mv "$FINAL_FILE.tmp" "$FINAL_FILE"
   rm -f "$NEW_FILE"
 else

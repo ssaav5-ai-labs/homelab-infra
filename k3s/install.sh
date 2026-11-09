@@ -52,6 +52,7 @@ trap "rm -rf $TMPDIR" EXIT
 CONFIG_FILE="$TMPDIR/config.yaml"
 KUBELET_DROPIN="$TMPDIR/99-kubelet-swap.conf"
 KUBE_VIP_DIR="$TMPDIR/kube-vip-manifests"
+TRAEFIK_DIR="$TMPDIR/traefik-manifests"
 
 cp "$SCRIPT_DIR/config/kubelet-swap.conf" "$KUBELET_DROPIN"
 
@@ -69,8 +70,13 @@ if [ "$ROLE" = "server" ]; then
   cp "$SCRIPT_DIR/kube-vip/rbac.yaml" "$KUBE_VIP_DIR/rbac.yaml"
   envsubst < "$SCRIPT_DIR/kube-vip/daemonset.yaml.tmpl" > "$KUBE_VIP_DIR/daemonset.yaml"
 
+  echo "=== Rendering traefik HelmChartConfig ==="
+  mkdir -p "$TRAEFIK_DIR"
+  cp "$SCRIPT_DIR/traefik/helmchartconfig.yaml" "$TRAEFIK_DIR/helmchartconfig.yaml"
+
   scp -o StrictHostKeyChecking=no -i ~/.ssh/homelab \
     "$KUBE_VIP_DIR/rbac.yaml" "$KUBE_VIP_DIR/daemonset.yaml" \
+    "$TRAEFIK_DIR/helmchartconfig.yaml" \
     "debian@${NODE_IP}:/tmp/"
 
   KUBE_VIP_MANIFESTS=1
@@ -105,6 +111,10 @@ if [ "$KUBE_VIP_MANIFESTS" = "1" ]; then
   sudo cp /tmp/daemonset.yaml /var/lib/rancher/k3s/server/manifests/kube-vip-daemonset.yaml
   sudo chmod 644 /var/lib/rancher/k3s/server/manifests/kube-vip-rbac.yaml
   sudo chmod 644 /var/lib/rancher/k3s/server/manifests/kube-vip-daemonset.yaml
+
+  echo "Deploying traefik HelmChartConfig..."
+  sudo cp /tmp/helmchartconfig.yaml /var/lib/rancher/k3s/server/manifests/traefik-helmchartconfig.yaml
+  sudo chmod 644 /var/lib/rancher/k3s/server/manifests/traefik-helmchartconfig.yaml
 fi
 
 echo "Running installer for ${K3S_VERSION}..."
@@ -112,6 +122,16 @@ curl -sfL "https://raw.githubusercontent.com/k3s-io/k3s/${K3S_VERSION}/install.s
   sudo INSTALL_K3S_VERSION="$K3S_VERSION" \
   INSTALL_K3S_EXEC="$INSTALL_EXEC" \
   sh -
+
+if [ "$KUBE_VIP_MANIFESTS" = "1" ]; then
+  echo "Scaling coredns to 2 replicas (k3s resets this on reinstall/upgrade)..."
+  for i in $(seq 1 60); do
+    if sudo k3s kubectl -n kube-system get deployment coredns >/dev/null 2>&1; then
+      sudo k3s kubectl -n kube-system scale deployment coredns --replicas=2 && break
+    fi
+    sleep 5
+  done
+fi
 
 echo "k3s service status:"
 sudo k3s check-config 2>&1 | head -30
