@@ -1,6 +1,6 @@
 token: "${K3S_TOKEN}"
 node-ip: "${NODE_IP}"
-tls-san: ["${NODE_IP}"]
+tls-san: ["${NODE_IP}", "${K3S_API_VIP}"]
 secrets-encryption: true
 write-kubeconfig-mode: "0600"
 etcd-snapshot-schedule-cron: "0 2 * * *"
