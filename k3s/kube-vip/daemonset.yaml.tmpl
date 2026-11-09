@@ -42,8 +42,10 @@ spec:
           value: "${K3S_API_VIP}"
         - name: vip_interface
           value: "eth0"
-        - name: vip_controlplane
+        - name: cp_enable
           value: "true"
+        - name: cp_namespace
+          value: kube-system
         - name: vip_leaderelection
           value: "true"
         - name: vip_leaseduration
@@ -52,6 +54,10 @@ spec:
           value: "3"
         - name: vip_retryperiod
           value: "1"
+        - name: bgp_enable
+          value: "false"
+        - name: svc_enable
+          value: "false"
         securityContext:
           capabilities:
             add:
