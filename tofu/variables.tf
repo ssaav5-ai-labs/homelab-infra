@@ -8,6 +8,8 @@ variable "vms" {
     ip          = string
     disk_size   = number
     memory      = number
+    cores       = optional(number, 4)
+    datastore   = optional(string, "local-lvm")
   }))
 }
 
