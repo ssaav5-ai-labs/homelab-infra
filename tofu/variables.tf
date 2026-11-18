@@ -31,4 +31,5 @@ variable "devbox" {
     cores       = optional(number, 4)
     datastore   = optional(string, "nvme-data")
   })
+  default = {}
 }
