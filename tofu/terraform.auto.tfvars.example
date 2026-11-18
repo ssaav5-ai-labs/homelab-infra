@@ -31,3 +31,15 @@ vms = {
     datastore   = "nvme-data"
   }
 }
+
+devbox = {
+  node        = "pve03"
+  vm_id       = 110
+  name        = "devbox"
+  template_id = 9003
+  ip          = "192.168.86.214"
+  disk_size   = 120
+  memory      = 8192
+  cores       = 4
+  datastore   = "nvme-data"
+}
