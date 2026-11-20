@@ -29,5 +29,5 @@
     "source=/home/debian/.sops-age,target=/home/vscode/.sops-age,type=bind"
   ],
   "forwardPorts": [],
-  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.local && git config --global --add safe.directory ${containerWorkspaceFolder} && git config --global core.autocrlf input && sudo apt-get update -qq && sudo apt-get install -y -q tmux && npm install -g opencode-ai@1.19.3 @inkeep/open-knowledge"
+  "postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.local && git config --global --add safe.directory ${containerWorkspaceFolder} && git config --global core.autocrlf input && sudo apt-get update -qq && sudo apt-get install -y -q tmux && printf 'set -g default-terminal \"tmux-256color\"\\nset -as terminal-features \",*:RGB\"\\n' > ~/.tmux.conf && npm install -g opencode-ai@1.19.3 @inkeep/open-knowledge"
 }
